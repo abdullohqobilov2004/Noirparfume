@@ -1,0 +1,2031 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parfum Katalog — Hashamatli Atirlar Kolleksiyasi</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Playfair Display & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        ivory: '#FAF8F5',
+                        cream: '#F3EFEA',
+                        charcoal: '#1C1917',
+                        stoneDark: '#292524',
+                        gold: {
+                            DEFAULT: '#B48A4E',
+                            light: '#D4B07A',
+                            dark: '#8F6B36',
+                            soft: '#F5EFE6'
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['"Playfair Display"', 'Georgia', 'serif'],
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'luxury': '0 10px 30px -10px rgba(28, 25, 23, 0.08)',
+                        'luxury-hover': '0 20px 40px -15px rgba(180, 138, 78, 0.18)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Scrollbar & Smooth Transitions */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #FAF8F5;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #D6CFC7;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #B48A4E;
+        }
+
+        .glass-header {
+            background: rgba(250, 248, 245, 0.88);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .bottle-float {
+            transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .perfume-card:hover .bottle-float {
+            transform: translateY(-6px) scale(1.03);
+        }
+
+        /* Hide scrollbar for horizontal filter pills on mobile */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-ivory text-charcoal font-sans antialiased selection:bg-gold selection:text-white">
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- Header & Navigation -->
+    <header class="sticky top-0 z-30 glass-header border-b border-stone-200/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-wrap items-center justify-between py-3.5 gap-3">
+                
+                <!-- Brand Logo -->
+                <div class="flex items-center gap-3 cursor-pointer" onclick="resetFilters()">
+                    <div class="w-10 h-10 rounded-xl bg-charcoal text-gold flex items-center justify-center shadow-sm border border-gold/30">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                            <rect x="6" y="8" width="12" height="13" rx="2.5" />
+                            <path d="M9 8V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V8" />
+                            <path d="M12 2v2" />
+                            <circle cx="12" cy="14.5" r="2" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="font-serif text-xl sm:text-2xl font-bold tracking-tight text-charcoal leading-none">
+                            PARFUM <span class="text-gold italic font-medium">Katalog & Narxlar</span>
+                        </h1>
+                        <p class="text-[11px] uppercase tracking-[0.2em] text-stone-500 mt-0.5">Raspiv & Original Flakonlar</p>
+                    </div>
+                </div>
+
+                <!-- Search Bar (Desktop & Tablet) -->
+                <div class="order-3 md:order-2 w-full md:w-80 lg:w-[400px] relative">
+                    <i data-lucide="search" class="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                    <input 
+                        type="text" 
+                        id="search-input" 
+                        placeholder="Atir nomi, brend yoki hid notasi (masalan: kirke, ud)..." 
+                        class="w-full pl-10 pr-9 py-2.5 bg-white border border-stone-200 rounded-xl text-sm text-charcoal placeholder-stone-400 focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/15 transition-all"
+                    >
+                    <button id="clear-search-btn" onclick="clearSearch()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-charcoal p-1">
+                        <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                    </button>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="order-2 md:order-3 flex items-center gap-2 sm:gap-2.5">
+                    <!-- Bulk Price / Currency Control Button -->
+                    <button 
+                        onclick="openBulkPriceModal()" 
+                        class="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-white hover:bg-gold-soft text-charcoal border border-stone-200 hover:border-gold/50 text-xs sm:text-sm font-medium transition-all shadow-sm"
+                        title="Narxlarni foizga o'zgartirish yoki kursni sozlash"
+                    >
+                        <i data-lucide="percent" class="w-4 h-4 text-gold"></i>
+                        <span class="hidden lg:inline">Narx boshqaruvi</span>
+                    </button>
+
+                    <!-- Add New Perfume Button -->
+                    <button 
+                        onclick="openAddModal()" 
+                        class="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-white hover:bg-gold-soft text-charcoal border border-stone-200 hover:border-gold/50 text-xs sm:text-sm font-medium transition-all shadow-sm"
+                        title="Katalogga yangi atir va narxlar qo'shish"
+                    >
+                        <i data-lucide="plus" class="w-4 h-4 text-gold"></i>
+                        <span class="hidden sm:inline">Yangi atir</span>
+                    </button>
+
+                    <!-- Selection / Cart Drawer Button -->
+                    <button 
+                        onclick="toggleDrawer(true)" 
+                        class="relative inline-flex items-center gap-2 px-3.5 sm:px-4 py-2.5 rounded-xl bg-charcoal hover:bg-stoneDark text-white text-xs sm:text-sm font-medium transition-all shadow-sm"
+                    >
+                        <i data-lucide="shopping-bag" class="w-4 h-4 text-gold"></i>
+                        <span>Buyurtma</span>
+                        <span id="cart-badge" class="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-gold text-white text-[11px] font-bold">0</span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Banner (Compact Boutique Intro & View Switcher) -->
+    <section class="border-b border-stone-200/70 bg-gradient-to-b from-cream/80 to-ivory">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-7 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div>
+                <div class="flex flex-wrap items-center gap-2 mb-2">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold-soft border border-gold/25 text-gold-dark text-xs font-medium">
+                        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                        Raspiv (5ml / 10ml) va Original Flakonlar (50ml / 100ml)
+                    </span>
+                    <span id="rate-indicator" onclick="openBulkPriceModal()" class="cursor-pointer inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white border border-stone-200 text-stone-600 hover:border-gold text-[11px] font-medium transition-colors">
+                        1$ = 12 800 so'm
+                    </span>
+                </div>
+                <h2 class="font-serif text-2xl sm:text-3xl font-semibold text-charcoal">
+                    Hashamatli Atirlar Katalogi va Prayst-list
+                </h2>
+                <p class="text-stone-600 text-sm mt-1 max-w-2xl">
+                    Kartochkaning o'zida hajmni (5ml, 10ml, 50ml, 100ml) tanlab narxlarni solishtiring yoki to'liq narxlar jadvaliga o'ting.
+                </p>
+            </div>
+            
+            <!-- View Mode Toggle, Currency & Admin Controls -->
+            <div class="flex flex-wrap items-center gap-2.5 self-start lg:self-end">
+                <!-- View Switcher: Cards vs Pricelist Table -->
+                <div class="inline-flex rounded-xl bg-white p-1 border border-stone-200 shadow-sm text-xs font-semibold">
+                    <button id="view-cards-btn" onclick="setViewMode('cards')" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-charcoal text-white transition-all">
+                        <i data-lucide="layout-grid" class="w-3.5 h-3.5 text-gold"></i>
+                        <span>Katalog</span>
+                    </button>
+                    <button id="view-table-btn" onclick="setViewMode('table')" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-stone-600 hover:text-charcoal transition-all">
+                        <i data-lucide="table-2" class="w-3.5 h-3.5 text-gold"></i>
+                        <span>Narxlar ro'yxati</span>
+                    </button>
+                </div>
+
+                <!-- Currency Switcher -->
+                <div class="inline-flex rounded-xl bg-white p-1 border border-stone-200 shadow-sm text-xs font-medium">
+                    <button id="curr-uzs" onclick="setCurrency('UZS')" class="px-3 py-2 rounded-lg bg-gold text-white font-semibold transition-all">UZS</button>
+                    <button id="curr-usd" onclick="setCurrency('USD')" class="px-3 py-2 rounded-lg text-stone-600 hover:text-charcoal transition-all">USD ($)</button>
+                </div>
+
+                <!-- Reset Button -->
+                <button 
+                    onclick="openResetConfirmModal()" 
+                    class="p-2.5 rounded-xl bg-white border border-stone-200 text-stone-500 hover:text-red-600 hover:border-red-200 transition-all text-xs"
+                    title="Katalog va narxlarni boshlang'ich holatga qaytarish"
+                >
+                    <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content Area -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        
+        <!-- Filters & Sorting Toolbar -->
+        <div class="flex flex-col gap-4 mb-7">
+            
+            <!-- Row 1: Gender Category Pills, Discount Filter & Sort Dropdown -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                <!-- Gender & Sale Filter Pills -->
+                <div id="category-filters" class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 md:pb-0">
+                    <button data-category="all" class="cat-pill active px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all bg-charcoal text-white shadow-sm">
+                        Barchasi
+                    </button>
+                    <button data-category="Erkaklar" class="cat-pill px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all bg-white text-stone-700 border border-stone-200 hover:border-gold">
+                        Erkaklar
+                    </button>
+                    <button data-category="Ayollar" class="cat-pill px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all bg-white text-stone-700 border border-stone-200 hover:border-gold">
+                        Ayollar
+                    </button>
+                    <button data-category="Uniseks" class="cat-pill px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all bg-white text-stone-700 border border-stone-200 hover:border-gold">
+                        Uniseks
+                    </button>
+                    <button id="discount-filter-btn" onclick="toggleDiscountFilter()" class="px-3.5 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all bg-white text-rose-700 border border-rose-200 hover:bg-rose-50 inline-flex items-center gap-1.5">
+                        <i data-lucide="tag" class="w-3.5 h-3.5"></i>
+                        <span>Aksiya / Chegirma</span>
+                    </button>
+                </div>
+
+                <!-- Sort, Export Pricelist & Count -->
+                <div class="flex items-center justify-between md:justify-end gap-2.5">
+                    <span id="results-count" class="text-xs text-stone-500 font-medium whitespace-nowrap">12 ta atir</span>
+                    
+                    <button onclick="copyFullPricelist()" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gold-soft hover:bg-gold hover:text-white text-gold-dark border border-gold/30 text-xs font-semibold transition-all whitespace-nowrap" title="Butun narxlar ro'yxatini Telegram/WhatsApp uchun nusxalash">
+                        <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+                        <span>Prayst-listni nusxalash</span>
+                    </button>
+
+                    <div class="relative">
+                        <select id="sort-select" onchange="handleSortChange()" class="appearance-none bg-white border border-stone-200 rounded-xl pl-3 pr-8 py-2 text-xs sm:text-sm text-charcoal font-medium focus:outline-none focus:border-gold cursor-pointer">
+                            <option value="popular">Mashhurlik</option>
+                            <option value="price-asc">Narx: arzondan qimmatga</option>
+                            <option value="price-desc">Narx: qimmatdan arzonga</option>
+                            <option value="discount">Avval chegirmalar</option>
+                            <option value="newest">Yangi qo'shilganlar</option>
+                        </select>
+                        <i data-lucide="chevron-down" class="w-4 h-4 text-stone-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 2: Scent Family Pills -->
+            <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pt-2 border-t border-stone-200/60">
+                <span class="text-xs font-medium text-stone-400 uppercase tracking-wider mr-1 whitespace-nowrap">Hid oilasi:</span>
+                <button data-scent="all" class="scent-pill active px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all bg-gold text-white">
+                    Barcha hidlar
+                </button>
+                <button data-scent="Sharqona" class="scent-pill px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all bg-white text-stone-600 border border-stone-200 hover:border-gold/60">
+                    ✨ Sharqona (Oriental)
+                </button>
+                <button data-scent="Yog'ochli" class="scent-pill px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all bg-white text-stone-600 border border-stone-200 hover:border-gold/60">
+                    🌲 Yog'ochli (Woody)
+                </button>
+                <button data-scent="Gullik" class="scent-pill px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all bg-white text-stone-600 border border-stone-200 hover:border-gold/60">
+                    🌸 Gullik (Floral)
+                </button>
+                <button data-scent="Tsitrus va Tetik" class="scent-pill px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all bg-white text-stone-600 border border-stone-200 hover:border-gold/60">
+                    🍋 Tsitrus va Tetik
+                </button>
+            </div>
+        </div>
+
+        <!-- VIEW 1: Perfume Catalog Cards Grid -->
+        <div id="catalog-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <!-- Perfume cards will be dynamically rendered here -->
+        </div>
+
+        <!-- VIEW 2: Luxury Pricelist Table (Hidden by default) -->
+        <div id="pricelist-table-wrapper" class="hidden bg-white rounded-3xl border border-stone-200/90 shadow-luxury overflow-hidden">
+            <div class="px-6 py-4 bg-charcoal text-white flex flex-wrap items-center justify-between gap-3">
+                <div class="flex items-center gap-2.5">
+                    <i data-lucide="list-ordered" class="w-5 h-5 text-gold"></i>
+                    <div>
+                        <h3 class="font-serif text-lg font-semibold">Rasmiy Narxlar Ro'yxati (Pricelist)</h3>
+                        <p class="text-xs text-stone-400">Narx ustiga bosib tanlanganlarga qo'shing yoki qalamcha orqali narxni tahrirlang</p>
+                    </div>
+                </div>
+                <button onclick="copyFullPricelist()" class="px-4 py-2 rounded-xl bg-gold hover:bg-gold-dark text-white text-xs font-semibold inline-flex items-center gap-1.5 transition-all">
+                    <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                    <span>Jadvalni matn qilib nusxalash</span>
+                </button>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-cream/80 border-b border-stone-200 text-[11px] uppercase tracking-wider text-stone-600 font-bold">
+                            <th class="py-3.5 px-4">Atir va Brend</th>
+                            <th class="py-3.5 px-3">Toifa</th>
+                            <th class="py-3.5 px-3 text-right">5 ml <span class="font-normal text-stone-400">(Raspiv)</span></th>
+                            <th class="py-3.5 px-3 text-right">10 ml <span class="font-normal text-stone-400">(Raspiv)</span></th>
+                            <th class="py-3.5 px-3 text-right">50 ml <span class="font-normal text-stone-400">(Flakon)</span></th>
+                            <th class="py-3.5 px-3 text-right">100 ml <span class="font-normal text-stone-400">(Flakon)</span></th>
+                            <th class="py-3.5 px-4 text-center">Amallar</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pricelist-tbody" class="divide-y divide-stone-100 text-sm">
+                        <!-- Dynamically populated rows -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Empty State (Shown when search/filter yields 0 results) -->
+        <div id="empty-state" class="hidden py-16 text-center bg-white rounded-3xl border border-stone-200/80 shadow-luxury">
+            <div class="w-16 h-16 rounded-2xl bg-cream text-gold mx-auto flex items-center justify-center mb-4">
+                <i data-lucide="search-x" class="w-8 h-8"></i>
+            </div>
+            <h3 class="font-serif text-xl font-semibold text-charcoal">Hech qanday atir topilmadi</h3>
+            <p class="text-stone-500 text-sm mt-1 max-w-md mx-auto">Qidiruv so'zini o'zgartirib ko'ring yoki barcha filtrlarni bekor qiling.</p>
+            <button onclick="resetFilters()" class="mt-5 px-5 py-2.5 rounded-xl bg-charcoal text-white text-sm font-medium hover:bg-stoneDark transition-all">
+                Filtrlarni tozalash
+            </button>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-stone-200/80 bg-cream/50 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-500">
+            <div class="flex items-center gap-2">
+                <span class="font-serif font-bold text-charcoal text-sm">PARFUM Katalog & Narxlar</span>
+                <span>•</span>
+                <span>Raspiv va original flakonlar savdo tizimi</span>
+            </div>
+            <p>Barcha narxlar va o'zgarishlar brauzer xotirasida avtomatik saqlanadi.</p>
+        </div>
+    </footer>
+
+    <!-- ===================================================================== -->
+    <!-- MODAL 1: PRODUCT DETAIL & FRAGRANCE PYRAMID MODAL                     -->
+    <!-- ===================================================================== -->
+    <div id="detail-modal" class="fixed inset-0 z-40 hidden items-center justify-center p-4 bg-charcoal/60 backdrop-blur-sm overflow-y-auto">
+        <div class="bg-ivory w-full max-w-3xl rounded-3xl shadow-2xl border border-stone-200 overflow-hidden my-auto relative">
+            <!-- Close Button -->
+            <button onclick="closeDetailModal()" class="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-white/90 hover:bg-white text-charcoal flex items-center justify-center shadow-sm border border-stone-200 transition-all">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <div id="detail-modal-content" class="grid grid-cols-1 md:grid-cols-12">
+                <!-- Populated dynamically via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- MODAL 2: ADD / EDIT PERFUME & ALL VOLUME PRICES MODAL                 -->
+    <!-- ===================================================================== -->
+    <div id="add-modal" class="fixed inset-0 z-40 hidden items-center justify-center p-4 bg-charcoal/60 backdrop-blur-sm overflow-y-auto">
+        <div class="bg-ivory w-full max-w-2xl rounded-3xl shadow-2xl border border-stone-200 overflow-hidden my-auto">
+            <div class="px-6 py-5 bg-white border-b border-stone-200 flex items-center justify-between">
+                <div>
+                    <h3 id="form-modal-title" class="font-serif text-xl font-bold text-charcoal">Yangi atir va narxlar qo'shish</h3>
+                    <p id="form-modal-subtitle" class="text-xs text-stone-500 mt-0.5">Raspiv (5ml/10ml) va flakon (50ml/100ml) narxlarini kiriting</p>
+                </div>
+                <button onclick="closeAddModal()" class="w-9 h-9 rounded-full bg-cream hover:bg-stone-200 text-charcoal flex items-center justify-center transition-all">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <form id="add-perfume-form" onsubmit="handleSavePerfume(event)" class="p-6 space-y-4 max-h-[82vh] overflow-y-auto">
+                <input type="hidden" id="edit-perfume-id" value="">
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-stone-700 mb-1">Brend nomi *</label>
+                        <input type="text" id="new-brand" required placeholder="Masalan: Louis Vuitton" class="w-full px-3.5 py-2.5 bg-white border border-stone-200 rounded-xl text-sm focus:outline-none focus:border-gold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-stone-700 mb-1">Atir nomi *</label>
+                        <input type="text" id="new-name" required placeholder="Masalan: Imagination" class="w-full px-3.5 py-2.5 bg-white border border-stone-200 rounded-xl text-sm focus:outline-none focus:border-gold">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-stone-700 mb-1">Kimlar uchun *</label>
+                        <select id="new-category" class="w-full px-3 py-2.5 bg-white border border-stone-200 rounded-xl text-sm focus:outline-none focus:border-gold">
+                            <option value="Erkaklar">Erkaklar</option>
+                            <option value="Ayollar">Ayollar</option>
+                            <option value="Uniseks">Uniseks</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-stone-700 mb-1">Hid oilasi *</label>
+                        <select id="new-scent" class="w-full px-3 py-2.5 bg-white border border-stone-200 rounded-xl text-sm focus:outline-none focus:border-gold">
+                            <option value="Sharqona">Sharqona</option>
+                            <option value="Yog'ochli">Yog'ochli</option>
+                            <option value="Gullik">Gullik</option>
+                            <option value="Tsitrus va Tetik">Tsitrus va Tetik</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-stone-700 mb-1">Konsentratsiya</label>
+                        <select id="new-conc" class="w-full px-3 py-2.5 bg-white border border-stone-200 rounded-xl text-sm focus:outline-none focus:border-gold">
+                            <option value="Eau de Parfum">EDP</option>
+                            <option value="Extrait de Parfum">Extrait</option>
+                            <option value="Eau de Toilette">EDT</option>
+                            <option value="Parfum">Parfum</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 4 Volumes Pricing Grid -->
+                <div class="bg-gold-soft/60 p-4 rounded-2xl border border-gold/30 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold uppercase tracking-wider text-charcoal flex items-center gap-1.5">
+                            <i data-lucide="banknote" class="w-4 h-4 text-gold"></i>
+                            Hajmlar bo'yicha narxlar (UZS so'mda)
+                        </span>
+                        <div class="flex items-center gap-2">
+                            <label class="text-xs font-semibold text-rose-700">Chegirma (%):</label>
+                            <input type="number" id="new-discount" min="0" max="80" value="0" class="w-16 px-2 py-1 bg-white border border-rose-200 rounded-lg text-xs font-bold text-rose-700 text-center focus:outline-none focus:border-rose-500">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-semibold text-stone-700 mb-1">5 ml (Raspiv) *</label>
+                            <input type="number" id="new-price5" required min="10000" step="5000" placeholder="140000" class="w-full px-3 py-2 bg-white border border-stone-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-gold">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-stone-700 mb-1">10 ml (Raspiv) *</label>
+                            <input type="number" id="new-price10" required min="20000" step="5000" placeholder="260000" class="w-full px-3 py-2 bg-white border border-stone-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-gold">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-stone-700 mb-1">50 ml (Flakon) *</label>
+                            <input type="number" id="new-price50" required min="50000" step="10000" placeholder="1400000" class="w-full px-3 py-2 bg-white border border-stone-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-gold">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-stone-700 mb-1">100 ml (Flakon) *</label>
+                            <input type="number" id="new-price100" required min="50000" step="10000" placeholder="2200000" class="w-full px-3 py-2 bg-white border border-stone-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-gold">
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-stone-700 mb-1.5">Flakon rangi</label>
+                    <div class="flex items-center gap-3" id="color-picker-group">
+                        <label class="cursor-pointer"><input type="radio" name="bottleColor" value="amber" checked class="sr-only peer"><span class="block w-8 h-8 rounded-full bg-amber-600 ring-2 ring-offset-2 ring-transparent peer-checked:ring-charcoal"></span></label>
+                        <label class="cursor-pointer"><input type="radio" name="bottleColor" value="navy" class="sr-only peer"><span class="block w-8 h-8 rounded-full bg-slate-900 ring-2 ring-offset-2 ring-transparent peer-checked:ring-charcoal"></span></label>
+                        <label class="cursor-pointer"><input type="radio" name="bottleColor" value="ruby" class="sr-only peer"><span class="block w-8 h-8 rounded-full bg-rose-800 ring-2 ring-offset-2 ring-transparent peer-checked:ring-charcoal"></span></label>
+                        <label class="cursor-pointer"><input type="radio" name="bottleColor" value="emerald" class="sr-only peer"><span class="block w-8 h-8 rounded-full bg-emerald-800 ring-2 ring-offset-2 ring-transparent peer-checked:ring-charcoal"></span></label>
+                        <label class="cursor-pointer"><input type="radio" name="bottleColor" value="blush" class="sr-only peer"><span class="block w-8 h-8 rounded-full bg-pink-300 ring-2 ring-offset-2 ring-transparent peer-checked:ring-charcoal"></span></label>
+                        <label class="cursor-pointer"><input type="radio" name="bottleColor" value="crystal" class="sr-only peer"><span class="block w-8 h-8 rounded-full bg-sky-200 ring-2 ring-offset-2 ring-transparent peer-checked:ring-charcoal"></span></label>
+                        <label class="cursor-pointer"><input type="radio" name="bottleColor" value="obsidian" class="sr-only peer"><span class="block w-8 h-8 rounded-full bg-stone-800 ring-2 ring-offset-2 ring-transparent peer-checked:ring-charcoal"></span></label>
+                    </div>
+                </div>
+
+                <div class="space-y-2 bg-cream/70 p-4 rounded-2xl border border-stone-200/70">
+                    <p class="text-xs font-semibold text-charcoal">Notalar piramidasi (vergul bilan ajrating)</p>
+                    <input type="text" id="new-top" required placeholder="Yuqori notalar: Bergamot, Limon, Zanjabil" class="w-full px-3 py-2 bg-white border border-stone-200 rounded-xl text-xs focus:outline-none focus:border-gold">
+                    <input type="text" id="new-heart" required placeholder="O'rta notalar: Neroli, Dolchin, Qora choy" class="w-full px-3 py-2 bg-white border border-stone-200 rounded-xl text-xs focus:outline-none focus:border-gold">
+                    <input type="text" id="new-base" required placeholder="Asosiy notalar: Ambroksan, Olibanum, Gayak yog'ochi" class="w-full px-3 py-2 bg-white border border-stone-200 rounded-xl text-xs focus:outline-none focus:border-gold">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-stone-700 mb-1">Qisqacha tavsif *</label>
+                    <textarea id="new-desc" rows="2" required placeholder="Atir haqida mijozlar uchun jozibador ta'rif..." class="w-full px-3.5 py-2 bg-white border border-stone-200 rounded-xl text-sm focus:outline-none focus:border-gold"></textarea>
+                </div>
+
+                <div class="pt-2 flex items-center justify-end gap-3">
+                    <button type="button" onclick="closeAddModal()" class="px-4 py-2.5 rounded-xl bg-white border border-stone-200 text-sm font-medium text-stone-600 hover:text-charcoal">
+                        Bekor qilish
+                    </button>
+                    <button type="submit" class="px-6 py-2.5 rounded-xl bg-charcoal hover:bg-stoneDark text-white text-sm font-medium shadow-sm transition-all">
+                        Saqlash
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- MODAL 3: BULK PRICE & CURRENCY RATE MANAGEMENT MODAL                  -->
+    <!-- ===================================================================== -->
+    <div id="bulk-price-modal" class="fixed inset-0 z-40 hidden items-center justify-center p-4 bg-charcoal/60 backdrop-blur-sm">
+        <div class="bg-ivory w-full max-w-md rounded-3xl shadow-2xl border border-stone-200 overflow-hidden">
+            <div class="px-6 py-5 bg-white border-b border-stone-200 flex items-center justify-between">
+                <div>
+                    <h3 class="font-serif text-xl font-bold text-charcoal">Narxlar va Valyuta Boshqaruvi</h3>
+                    <p class="text-xs text-stone-500 mt-0.5">Kursni sozlang yoki barcha narxlarni ommaviy o'zgartiring</p>
+                </div>
+                <button onclick="closeBulkPriceModal()" class="w-9 h-9 rounded-full bg-cream hover:bg-stone-200 text-charcoal flex items-center justify-center transition-all">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <div class="p-6 space-y-6">
+                <!-- Exchange Rate Setting -->
+                <div class="bg-white p-4 rounded-2xl border border-stone-200 space-y-2.5">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-charcoal">Dollar kursi (1 USD = ? UZS)</label>
+                    <div class="flex items-center gap-2">
+                        <input type="number" id="usd-rate-input" min="1000" step="50" value="12800" class="flex-1 px-3.5 py-2.5 bg-ivory border border-stone-200 rounded-xl text-sm font-bold text-charcoal focus:outline-none focus:border-gold">
+                        <button onclick="updateUsdRate()" class="px-4 py-2.5 rounded-xl bg-charcoal hover:bg-stoneDark text-white text-xs font-semibold transition-all">
+                            Kursni saqlash
+                        </button>
+                    </div>
+                    <p class="text-[11px] text-stone-500">USD ($) rejimiga o'tganda barcha narxlar ushbu kurs bo'yicha avtomatik hisoblanadi.</p>
+                </div>
+
+                <!-- Bulk Percentage Adjustment -->
+                <div class="bg-gold-soft/70 p-4 rounded-2xl border border-gold/30 space-y-3">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-charcoal">Barcha narxlarni foizga o'zgartirish</label>
+                        <p class="text-[11px] text-stone-600 mt-0.5">Katalogdagi barcha atirlarning 5ml, 10ml, 50ml va 100ml narxlariga ta'sir qiladi.</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-4 gap-2">
+                        <button onclick="applyBulkPercent(-10)" class="py-2 rounded-xl bg-white hover:bg-rose-50 text-rose-700 border border-stone-200 text-xs font-bold transition-all">-10%</button>
+                        <button onclick="applyBulkPercent(-5)" class="py-2 rounded-xl bg-white hover:bg-rose-50 text-rose-700 border border-stone-200 text-xs font-bold transition-all">-5%</button>
+                        <button onclick="applyBulkPercent(5)" class="py-2 rounded-xl bg-white hover:bg-emerald-50 text-emerald-700 border border-stone-200 text-xs font-bold transition-all">+5%</button>
+                        <button onclick="applyBulkPercent(10)" class="py-2 rounded-xl bg-white hover:bg-emerald-50 text-emerald-700 border border-stone-200 text-xs font-bold transition-all">+10%</button>
+                    </div>
+
+                    <div class="flex items-center gap-2 pt-1">
+                        <input type="number" id="custom-percent-input" placeholder="Masalan: 7 yoki -15" class="flex-1 px-3.5 py-2 bg-white border border-stone-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-gold">
+                        <button onclick="applyCustomPercent()" class="px-4 py-2 rounded-xl bg-gold hover:bg-gold-dark text-white text-xs font-semibold transition-all">
+                            Qo'llash (%)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- MODAL 4: RESET CONFIRMATION MODAL (NO NATIVE CONFIRM/ALERT)           -->
+    <!-- ===================================================================== -->
+    <div id="reset-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-charcoal/60 backdrop-blur-sm">
+        <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl border border-stone-200 text-center">
+            <div class="w-12 h-12 rounded-2xl bg-red-50 text-red-600 mx-auto flex items-center justify-center mb-3">
+                <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+            </div>
+            <h4 class="font-serif text-lg font-bold text-charcoal">Katalog va narxlarni tiklaysizmi?</h4>
+            <p class="text-xs text-stone-500 mt-1.5 leading-relaxed">
+                Siz qo'shgan atirlar va narx o'zgarishlari bekor qilinadi, standart 12 ta brend atirlar ro'yxati qayta tiklanadi.
+            </p>
+            <div class="mt-5 flex items-center justify-center gap-3">
+                <button onclick="closeResetConfirmModal()" class="flex-1 py-2.5 rounded-xl bg-cream text-charcoal text-xs font-semibold hover:bg-stone-200 transition-all">
+                    Yo'q, qolsin
+                </button>
+                <button onclick="confirmResetCatalog()" class="flex-1 py-2.5 rounded-xl bg-red-600 text-white text-xs font-semibold hover:bg-red-700 transition-all">
+                    Ha, tiklash
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- SLIDE-OVER DRAWER: SELECTION / ORDER LIST (TANLANGANLAR)              -->
+    <!-- ===================================================================== -->
+    <div id="selection-drawer-backdrop" onclick="toggleDrawer(false)" class="fixed inset-0 z-40 hidden bg-charcoal/50 backdrop-blur-xs transition-opacity"></div>
+    <aside id="selection-drawer" class="fixed top-0 right-0 z-50 h-full w-full max-w-md bg-ivory shadow-2xl border-l border-stone-200 transform translate-x-full transition-transform duration-300 flex flex-col">
+        
+        <!-- Drawer Header -->
+        <div class="px-6 py-5 bg-white border-b border-stone-200 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-xl bg-gold-soft text-gold flex items-center justify-center">
+                    <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h3 class="font-serif text-lg font-bold text-charcoal">Buyurtma ro'yxati</h3>
+                    <p class="text-xs text-stone-500">Tanlangan atirlar va umumiy hisob-kitob</p>
+                </div>
+            </div>
+            <button onclick="toggleDrawer(false)" class="w-9 h-9 rounded-full bg-cream hover:bg-stone-200 text-charcoal flex items-center justify-center transition-all">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+        </div>
+
+        <!-- Drawer Items List -->
+        <div id="selection-items-container" class="flex-1 overflow-y-auto p-6 space-y-3">
+            <!-- Populated dynamically -->
+        </div>
+
+        <!-- Drawer Footer & Export -->
+        <div id="selection-footer" class="p-6 bg-white border-t border-stone-200 space-y-4">
+            <div class="space-y-1">
+                <div id="selection-savings-row" class="hidden flex items-center justify-between text-xs text-emerald-700 font-medium">
+                    <span>Chegirma tejovi:</span>
+                    <span id="selection-savings-amount">0 so'm</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-stone-500">Umumiy qiymat:</span>
+                    <span id="selection-total-price" class="font-serif text-xl font-bold text-charcoal">0 so'm</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 gap-2.5">
+                <button onclick="copyOrderSummary()" class="w-full py-3 px-4 rounded-xl bg-charcoal hover:bg-stoneDark text-white text-sm font-medium flex items-center justify-center gap-2 shadow-sm transition-all">
+                    <i data-lucide="copy" class="w-4 h-4 text-gold"></i>
+                    <span>Chekni nusxalash (Telegram / WhatsApp)</span>
+                </button>
+                <button onclick="clearSelection()" class="w-full py-2 px-4 rounded-xl bg-cream hover:bg-stone-200 text-stone-600 text-xs font-medium transition-all">
+                    Ro'yxatni tozalash
+                </button>
+            </div>
+        </div>
+
+    </aside>
+
+    <!-- ===================================================================== -->
+    <!-- APPLICATION LOGIC & DATA                                              -->
+    <!-- ===================================================================== -->
+    <script>
+        // Pre-loaded Luxury & Niche Perfume Catalog Data (12 Iconic Scents with 5ml, 10ml, 50ml, 100ml prices)
+        const DEFAULT_PERFUMES = [
+            {
+                id: 'p1',
+                brand: 'Maison Francis Kurkdjian',
+                name: 'Baccarat Rouge 540',
+                category: 'Uniseks',
+                scent: 'Sharqona',
+                concentration: 'Extrait de Parfum',
+                prices: { 5: 260000, 10: 490000, 50: 3200000, 100: 4950000 },
+                discount: 10, // 10% aksiya
+                popularity: 100,
+                longevity: 95,
+                sillage: 98,
+                bottleColor: 'ruby',
+                topNotes: ['Za\'faron', 'Achchiq bodom'],
+                heartNotes: ['Misr yasmini', 'Kedr yog\'ochi'],
+                baseNotes: ['Kulrang ambra', 'Yog\'ochli mushk', 'Archa smolasi'],
+                description: 'Dunyo bo\'ylab afsonaga aylangan shohona ifor. Za\'faron va karamellashgan ambraning iliq, hashamatli uyg\'unligi kun bo\'yi o\'z shleyfini saqlab qoladi.'
+            },
+            {
+                id: 'p2',
+                brand: 'Chanel',
+                name: 'Bleu de Chanel Parfum',
+                category: 'Erkaklar',
+                scent: 'Yog\'ochli',
+                concentration: 'Parfum',
+                prices: { 5: 145000, 10: 270000, 50: 1850000, 100: 2650000 },
+                discount: 0,
+                popularity: 96,
+                longevity: 88,
+                sillage: 85,
+                bottleColor: 'navy',
+                topNotes: ['Limon qobig\'i', 'Bergamot', 'Yalpiz', 'Shuvoq'],
+                heartNotes: ['Lavanda', 'Ananas', 'Geran', 'Yashil notalar'],
+                baseNotes: ['Sandal daraxti', 'Kedr', 'Amberwood', 'Tonka loviyasi'],
+                description: 'Erkinlik va zamonaviy klassika timsoli. Tetiklantiruvchi tsitrus boshlanishi chuqur va olijanob sandal daraxti notalari bilan yakunlanadi.'
+            },
+            {
+                id: 'p3',
+                brand: 'Creed',
+                name: 'Aventus',
+                category: 'Erkaklar',
+                scent: 'Tsitrus va Tetik',
+                concentration: 'Eau de Parfum',
+                prices: { 5: 220000, 10: 410000, 50: 2950000, 100: 4400000 },
+                discount: 15,
+                popularity: 98,
+                longevity: 90,
+                sillage: 92,
+                bottleColor: 'emerald',
+                topNotes: ['Ananas', 'Bergamot', 'Qora smorodina', 'Olma'],
+                heartNotes: ['Qayin daraxti', 'Patchuli', 'Marokash yasmini', 'Atirgul'],
+                baseNotes: ['Mushk', 'Eman moxi', 'Kulrang ambra', 'Vanil'],
+                description: 'Muvaffaqiyat va kuch-qudrat ramzi. Shirin ananas va tutunli qayin daraxtining betakror kontrasti uni eng ko\'p maqtov oladigan atirga aylantirgan.'
+            },
+            {
+                id: 'p4',
+                brand: 'Parfums de Marly',
+                name: 'Delina',
+                category: 'Ayollar',
+                scent: 'Gullik',
+                concentration: 'Eau de Parfum',
+                prices: { 5: 195000, 10: 365000, 50: 2550000, 100: 3750000 },
+                discount: 0,
+                popularity: 95,
+                longevity: 92,
+                sillage: 94,
+                bottleColor: 'blush',
+                topNotes: ['Lichi', 'Rhubarb (Ravoch)', 'Bergamot', 'Muskat yong\'og\'i'],
+                heartNotes: ['Turk atirguli', 'Pion (Sallagul)', 'Mushk', 'Petaliya'],
+                baseNotes: ['Kashmeran', 'Kedr', 'Gaiti vetiveri', 'Tutunli ladan'],
+                description: 'Zamonaviy malikalarga xos nozik va jozibali atirgul guldastasi. Lichi mevasining nordon-shirin ta\'mi atirgulga yorqinlik baxsh etadi.'
+            },
+            {
+                id: 'p5',
+                brand: 'Dior',
+                name: 'Sauvage Elixir',
+                category: 'Erkaklar',
+                scent: 'Sharqona',
+                concentration: 'Elixir',
+                prices: { 5: 185000, 10: 345000, 50: 2250000, 100: 3250000 },
+                discount: 0,
+                popularity: 94,
+                longevity: 96,
+                sillage: 95,
+                bottleColor: 'navy',
+                topNotes: ['Dolchin', 'Muskat yong\'og\'i', 'Kardamon', 'Greypfrut'],
+                heartNotes: ['Fransuz lavandasi'],
+                baseNotes: ['Qizilmiya (Lakritza)', 'Sandal daraxti', 'Ambra', 'Patchuli'],
+                description: 'Nihoyatda konsentrlangan va boy ziravorli eliksir. Issiq dolchin, kardamon va sof lavanda uyg\'unligi kuchli xarakterli erkaklar uchun.'
+            },
+            {
+                id: 'p6',
+                brand: 'Tom Ford',
+                name: 'Lost Cherry',
+                category: 'Uniseks',
+                scent: 'Sharqona',
+                concentration: 'Eau de Parfum',
+                prices: { 5: 235000, 10: 440000, 50: 2850000, 100: 4200000 },
+                discount: 10,
+                popularity: 94,
+                longevity: 88,
+                sillage: 89,
+                bottleColor: 'ruby',
+                topNotes: ['Qora olcha', 'Olcha likyori', 'Achchiq bodom'],
+                heartNotes: ['Gilos sharbati', 'Turk atirguli', 'Yasmin Sambak', 'Olxo\'ri'],
+                baseNotes: ['Peru balzami', 'Tonka loviyasi', 'Sandal daraxti', 'Vanil', 'Dolchin'],
+                description: 'Pishgan qora olcha, achchiq bodom va iliq likyorning mast qiluvchi uyg\'unligi. Hashamatli va e\'tiborni tortuvchi shirin-achchiq kompozitsiya.'
+            },
+            {
+                id: 'p7',
+                brand: 'Tiziana Terenzi',
+                name: 'Kirke',
+                category: 'Uniseks',
+                scent: 'Tsitrus va Tetik',
+                concentration: 'Extrait de Parfum',
+                prices: { 5: 140000, 10: 260000, 50: 1650000, 100: 2350000 },
+                discount: 0,
+                popularity: 97,
+                longevity: 98,
+                sillage: 99,
+                bottleColor: 'amber',
+                topNotes: ['Marakuya', 'Shaftoli', 'Nok', 'Malina', 'Qora smorodina'],
+                heartNotes: ['Marvaridgul (Landish)'],
+                baseNotes: ['Mushk', 'Sandal daraxti', 'Vanil', 'Patchuli', 'Geliotrop'],
+                description: 'O\'zbekistonda eng mashhur va eng uzoq turuvchi mevali-mushkli ekstrakt. Tropik mevalar va oq mushkning nihoyatda kuchli shleyfi.'
+            },
+            {
+                id: 'p8',
+                brand: 'Marc-Antoine Barrois',
+                name: 'Ganymede',
+                category: 'Uniseks',
+                scent: 'Yog\'ochli',
+                concentration: 'Eau de Parfum',
+                prices: { 5: 190000, 10: 355000, 50: 2200000, 100: 3100000 },
+                discount: 0,
+                popularity: 93,
+                longevity: 94,
+                sillage: 92,
+                bottleColor: 'amber',
+                topNotes: ['Mandarin', 'Za\'faron'],
+                heartNotes: ['Binafsha bargi', 'Osmanthus', 'O\'lmas o\'t (Immortelle)'],
+                baseNotes: ['Mineral notalar', 'Zamsha (Suede)', 'Akigalawood', 'Mushk'],
+                description: 'Kosmik nafislik va zamonaviy zamsha ifori. Mineral musaffolik, mandarin va za\'faronning intellektual, o\'ta zamonaviy uyg\'unligi.'
+            },
+            {
+                id: 'p9',
+                brand: 'Orto Parisi',
+                name: 'Megamare',
+                category: 'Uniseks',
+                scent: 'Tsitrus va Tetik',
+                concentration: 'Parfum',
+                prices: { 5: 210000, 10: 395000, 50: 2450000, 100: 3450000 },
+                discount: 12,
+                popularity: 92,
+                longevity: 99,
+                sillage: 99,
+                bottleColor: 'emerald',
+                topNotes: ['Bergamot', 'Limon'],
+                heartNotes: ['Dengiz o\'tlari', 'Kalon (Dengiz shabadasi)', 'Gedion'],
+                baseNotes: ['Ambroksan', 'Kedr', 'Mushk'],
+                description: 'Cheksiz okean to\'lqinlari kuchi. Bir tomchisi ham bir necha kun kiyimda saqlanib qoladigan afsonaviy dengiz va ambroksan ekstrakti.'
+            },
+            {
+                id: 'p10',
+                brand: 'Tom Ford',
+                name: 'Black Orchid',
+                category: 'Uniseks',
+                scent: 'Sharqona',
+                concentration: 'Eau de Parfum',
+                prices: { 5: 155000, 10: 290000, 50: 1950000, 100: 2800000 },
+                discount: 0,
+                popularity: 89,
+                longevity: 93,
+                sillage: 91,
+                bottleColor: 'obsidian',
+                topNotes: ['Qora tryufel', 'Ilang-ilang', 'Bergamot', 'Qora smorodina'],
+                heartNotes: ['Qora orxideya', 'Ziravorlar', 'Mevali notalar', 'Nilufar'],
+                baseNotes: ['Meksika shokoladi', 'Patchuli', 'Vanil', 'Ladan', 'Sandal'],
+                description: 'Sirli, chuqur va hashamatli kechki atir. Qora orxideya, achchiq shokolad va tuproqli tryufel notalari o\'zgacha aura hosil qiladi.'
+            },
+            {
+                id: 'p11',
+                brand: 'Yves Saint Laurent',
+                name: 'Libre Intense',
+                category: 'Ayollar',
+                scent: 'Gullik',
+                concentration: 'Eau de Parfum Intense',
+                prices: { 5: 135000, 10: 250000, 50: 1650000, 100: 2350000 },
+                discount: 10,
+                popularity: 91,
+                longevity: 89,
+                sillage: 88,
+                bottleColor: 'amber',
+                topNotes: ['Mandarin', 'Bergamot', 'Fransuz lavandasi'],
+                heartNotes: ['Apelsin guli', 'Yasmin Sambak', 'Orxideya'],
+                baseNotes: ['Madagaskar vanili', 'Tonka loviyasi', 'Kulrang ambra', 'Vetiver'],
+                description: 'Jasur va o\'ziga ishongan ayollar uchun. Apelsin guli va iliq vanilning lavanda bilan kesishishi unutilmas oqshom iforini yaratadi.'
+            },
+            {
+                id: 'p12',
+                brand: 'Escentric Molecules',
+                name: 'Molecule 02',
+                category: 'Uniseks',
+                scent: 'Yog\'ochli',
+                concentration: 'Eau de Toilette',
+                prices: { 5: 115000, 10: 215000, 50: 1350000, 100: 1850000 },
+                discount: 0,
+                popularity: 90,
+                longevity: 84,
+                sillage: 82,
+                bottleColor: 'crystal',
+                topNotes: ['Sof Ambroksan molekulasi'],
+                heartNotes: ['Mineral ambra', 'Iliq teri effekti'],
+                baseNotes: ['Oq mushk', 'Yengil yog\'ochli shleyf'],
+                description: '100% sof Ambroksan molekulasidan iborat feromon effektli atir. Har bir inson terisida o\'zgacha, toza va magnit kabi tortuvchi hid taratadi.'
+            }
+        ];
+
+        // Application State
+        let state = {
+            perfumes: [],
+            cardSelectedVolumes: {}, // Tracks selected volume per card: { [perfumeId]: 5 | 10 | 50 | 100 }
+            selection: [], // { id, volume: 5 | 10 | 50 | 100, qty }
+            viewMode: 'cards', // 'cards' or 'table'
+            category: 'all',
+            scent: 'all',
+            onlyDiscounts: false,
+            searchQuery: '',
+            sortBy: 'popular',
+            currency: 'UZS', // 'UZS' or 'USD'
+            usdRate: 12800,
+            activeModalPerfumeId: null,
+            activeModalVolume: 10
+        };
+
+        // Storage Keys
+        const STORAGE_KEY_PERFUMES = 'parfum_katalog_items_v2';
+        const STORAGE_KEY_SELECTION = 'parfum_katalog_selection_v2';
+        const STORAGE_KEY_RATE = 'parfum_katalog_usd_rate_v2';
+
+        // Initialize App on Load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadFromStorage();
+            setupEventListeners();
+            updateRateDisplay();
+            renderAllViews();
+            renderSelectionDrawer();
+            lucide.createIcons();
+        });
+
+        // Load Data from LocalStorage
+        function loadFromStorage() {
+            try {
+                const savedPerfumes = localStorage.getItem(STORAGE_KEY_PERFUMES);
+                if (savedPerfumes) {
+                    state.perfumes = JSON.parse(savedPerfumes);
+                } else {
+                    state.perfumes = JSON.parse(JSON.stringify(DEFAULT_PERFUMES));
+                    savePerfumesToStorage();
+                }
+
+                const savedSelection = localStorage.getItem(STORAGE_KEY_SELECTION);
+                if (savedSelection) {
+                    state.selection = JSON.parse(savedSelection);
+                }
+
+                const savedRate = localStorage.getItem(STORAGE_KEY_RATE);
+                if (savedRate) {
+                    state.usdRate = parseInt(savedRate, 10) || 12800;
+                }
+            } catch (e) {
+                console.error('Xotiradan yuklashda xatolik:', e);
+                state.perfumes = JSON.parse(JSON.stringify(DEFAULT_PERFUMES));
+            }
+        }
+
+        function savePerfumesToStorage() {
+            try {
+                localStorage.setItem(STORAGE_KEY_PERFUMES, JSON.stringify(state.perfumes));
+            } catch (e) {
+                console.error('Saqlashda xatolik:', e);
+            }
+        }
+
+        function saveSelectionToStorage() {
+            try {
+                localStorage.setItem(STORAGE_KEY_SELECTION, JSON.stringify(state.selection));
+            } catch (e) {
+                console.error('Tanlanganlarni saqlashda xatolik:', e);
+            }
+        }
+
+        // Price Calculation Helper (Handles Discount & Currency)
+        function getCalculatedPrice(perfume, volume) {
+            const basePrice = (perfume.prices && perfume.prices[volume]) ? perfume.prices[volume] : 0;
+            const discount = perfume.discount || 0;
+            const finalPrice = discount > 0 ? Math.round((basePrice * (100 - discount)) / 100 / 1000) * 1000 : basePrice;
+            return {
+                original: basePrice,
+                final: finalPrice,
+                discount: discount
+            };
+        }
+
+        function formatPrice(uzsAmount) {
+            if (state.currency === 'USD') {
+                const usd = (uzsAmount / state.usdRate);
+                return usd < 10 ? `$${usd.toFixed(1)}` : `$${Math.round(usd).toLocaleString('en-US')}`;
+            }
+            return `${uzsAmount.toLocaleString('ru-RU')} so'm`;
+        }
+
+        function formatCompactPrice(uzsAmount) {
+            if (state.currency === 'USD') {
+                const usd = (uzsAmount / state.usdRate);
+                return usd < 10 ? `$${usd.toFixed(1)}` : `$${Math.round(usd)}`;
+            }
+            if (uzsAmount >= 1000000) {
+                const mln = uzsAmount / 1000000;
+                return `${Number.isInteger(mln) ? mln : mln.toFixed(2).replace(/\.?0+$/, '')} mln`;
+            }
+            return `${Math.round(uzsAmount / 1000)} ming`;
+        }
+
+        // Setup Filter & Search Event Listeners
+        function setupEventListeners() {
+            const searchInput = document.getElementById('search-input');
+            const clearBtn = document.getElementById('clear-search-btn');
+
+            searchInput.addEventListener('input', (e) => {
+                state.searchQuery = e.target.value.trim().toLowerCase();
+                clearBtn.classList.toggle('hidden', state.searchQuery.length === 0);
+                renderAllViews();
+            });
+
+            document.querySelectorAll('.cat-pill').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.cat-pill').forEach(b => {
+                        b.classList.remove('active', 'bg-charcoal', 'text-white', 'shadow-sm');
+                        b.classList.add('bg-white', 'text-stone-700', 'border', 'border-stone-200');
+                    });
+                    btn.classList.add('active', 'bg-charcoal', 'text-white', 'shadow-sm');
+                    btn.classList.remove('bg-white', 'text-stone-700', 'border', 'border-stone-200');
+
+                    state.category = btn.dataset.category;
+                    renderAllViews();
+                });
+            });
+
+            document.querySelectorAll('.scent-pill').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.scent-pill').forEach(b => {
+                        b.classList.remove('active', 'bg-gold', 'text-white');
+                        b.classList.add('bg-white', 'text-stone-600', 'border', 'border-stone-200');
+                    });
+                    btn.classList.add('active', 'bg-gold', 'text-white');
+                    btn.classList.remove('bg-white', 'text-stone-600', 'border', 'border-stone-200');
+
+                    state.scent = btn.dataset.scent;
+                    renderAllViews();
+                });
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    closeDetailModal();
+                    closeAddModal();
+                    closeBulkPriceModal();
+                    closeResetConfirmModal();
+                    toggleDrawer(false);
+                }
+            });
+        }
+
+        // View Mode Switcher (Cards vs Pricelist Table)
+        function setViewMode(mode) {
+            state.viewMode = mode;
+            const cardsBtn = document.getElementById('view-cards-btn');
+            const tableBtn = document.getElementById('view-table-btn');
+            const grid = document.getElementById('catalog-grid');
+            const tableWrapper = document.getElementById('pricelist-table-wrapper');
+
+            if (mode === 'cards') {
+                cardsBtn.className = 'inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-charcoal text-white transition-all';
+                tableBtn.className = 'inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-stone-600 hover:text-charcoal transition-all';
+                grid.classList.remove('hidden');
+                tableWrapper.classList.add('hidden');
+            } else {
+                tableBtn.className = 'inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-charcoal text-white transition-all';
+                cardsBtn.className = 'inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-stone-600 hover:text-charcoal transition-all';
+                grid.classList.add('hidden');
+                tableWrapper.classList.remove('hidden');
+            }
+            renderAllViews();
+        }
+
+        function toggleDiscountFilter() {
+            state.onlyDiscounts = !state.onlyDiscounts;
+            const btn = document.getElementById('discount-filter-btn');
+            if (state.onlyDiscounts) {
+                btn.classList.remove('bg-white', 'text-rose-700', 'border-rose-200');
+                btn.classList.add('bg-rose-600', 'text-white', 'border-rose-600', 'shadow-sm');
+            } else {
+                btn.classList.add('bg-white', 'text-rose-700', 'border-rose-200');
+                btn.classList.remove('bg-rose-600', 'text-white', 'border-rose-600', 'shadow-sm');
+            }
+            renderAllViews();
+        }
+
+        function setCurrency(curr) {
+            state.currency = curr;
+            const uzsBtn = document.getElementById('curr-uzs');
+            const usdBtn = document.getElementById('curr-usd');
+
+            if (curr === 'UZS') {
+                uzsBtn.className = 'px-3 py-2 rounded-lg bg-gold text-white font-semibold transition-all';
+                usdBtn.className = 'px-3 py-2 rounded-lg text-stone-600 hover:text-charcoal transition-all';
+            } else {
+                usdBtn.className = 'px-3 py-2 rounded-lg bg-gold text-white font-semibold transition-all';
+                uzsBtn.className = 'px-3 py-2 rounded-lg text-stone-600 hover:text-charcoal transition-all';
+            }
+
+            renderAllViews();
+            renderSelectionDrawer();
+            if (state.activeModalPerfumeId) {
+                openDetailModal(state.activeModalPerfumeId);
+            }
+        }
+
+        function clearSearch() {
+            const input = document.getElementById('search-input');
+            input.value = '';
+            state.searchQuery = '';
+            document.getElementById('clear-search-btn').classList.add('hidden');
+            renderAllViews();
+        }
+
+        function resetFilters() {
+            clearSearch();
+            state.category = 'all';
+            state.scent = 'all';
+            state.onlyDiscounts = false;
+            state.sortBy = 'popular';
+            document.getElementById('sort-select').value = 'popular';
+
+            const discBtn = document.getElementById('discount-filter-btn');
+            discBtn.classList.add('bg-white', 'text-rose-700', 'border-rose-200');
+            discBtn.classList.remove('bg-rose-600', 'text-white', 'border-rose-600', 'shadow-sm');
+
+            document.querySelectorAll('.cat-pill').forEach((b, idx) => {
+                if (idx === 0) {
+                    b.classList.add('active', 'bg-charcoal', 'text-white', 'shadow-sm');
+                    b.classList.remove('bg-white', 'text-stone-700', 'border', 'border-stone-200');
+                } else {
+                    b.classList.remove('active', 'bg-charcoal', 'text-white', 'shadow-sm');
+                    b.classList.add('bg-white', 'text-stone-700', 'border', 'border-stone-200');
+                }
+            });
+
+            document.querySelectorAll('.scent-pill').forEach((b, idx) => {
+                if (idx === 0) {
+                    b.classList.add('active', 'bg-gold', 'text-white');
+                    b.classList.remove('bg-white', 'text-stone-600', 'border', 'border-stone-200');
+                } else {
+                    b.classList.remove('active', 'bg-gold', 'text-white');
+                    b.classList.add('bg-white', 'text-stone-600', 'border', 'border-stone-200');
+                }
+            });
+
+            renderAllViews();
+        }
+
+        function handleSortChange() {
+            state.sortBy = document.getElementById('sort-select').value;
+            renderAllViews();
+        }
+
+        // Get Filtered & Sorted Perfumes
+        function getFilteredPerfumes() {
+            let filtered = state.perfumes.filter(item => {
+                const matchesCategory = state.category === 'all' || item.category === state.category;
+                const matchesScent = state.scent === 'all' || item.scent === state.scent;
+                const matchesDiscount = !state.onlyDiscounts || (item.discount && item.discount > 0);
+
+                if (!matchesCategory || !matchesScent || !matchesDiscount) return false;
+
+                if (state.searchQuery) {
+                    const q = state.searchQuery;
+                    const inName = item.name.toLowerCase().includes(q);
+                    const inBrand = item.brand.toLowerCase().includes(q);
+                    const inDesc = item.description.toLowerCase().includes(q);
+                    const allNotes = [...item.topNotes, ...item.heartNotes, ...item.baseNotes].join(' ').toLowerCase();
+                    const inNotes = allNotes.includes(q);
+                    return inName || inBrand || inDesc || inNotes;
+                }
+                return true;
+            });
+
+            filtered.sort((a, b) => {
+                const priceA = getCalculatedPrice(a, 10).final;
+                const priceB = getCalculatedPrice(b, 10).final;
+                if (state.sortBy === 'price-asc') return priceA - priceB;
+                if (state.sortBy === 'price-desc') return priceB - priceA;
+                if (state.sortBy === 'discount') return (b.discount || 0) - (a.discount || 0);
+                if (state.sortBy === 'newest') return (b.isCustom ? 1 : 0) - (a.isCustom ? 1 : 0);
+                return (b.popularity || 80) - (a.popularity || 80);
+            });
+
+            return filtered;
+        }
+
+        // Custom SVG Luxury Perfume Bottle Generator
+        function generateBottleSVG(perfume, sizeClass = "w-28 h-36") {
+            const palettes = {
+                ruby: { glass1: '#991B1B', glass2: '#450A0A', cap: '#D4B07A', labelBg: '#FAF8F5', labelText: '#1C1917' },
+                navy: { glass1: '#1E293B', glass2: '#0F172A', cap: '#B48A4E', labelBg: '#0F172A', labelText: '#F8FAFC' },
+                emerald: { glass1: '#065F46', glass2: '#022C22', cap: '#D4B07A', labelBg: '#FAF8F5', labelText: '#064E3B' },
+                blush: { glass1: '#FBCFE8', glass2: '#F472B6', cap: '#D4B07A', labelBg: '#FFFFFF', labelText: '#831843' },
+                amber: { glass1: '#D97706', glass2: '#78350F', cap: '#1C1917', labelBg: '#FAF8F5', labelText: '#451A03' },
+                obsidian: { glass1: '#292524', glass2: '#0C0A09', cap: '#B48A4E', labelBg: '#1C1917', labelText: '#D4B07A' },
+                crystal: { glass1: '#E0F2FE', glass2: '#BAE6FD', cap: '#1C1917', labelBg: '#FFFFFF', labelText: '#1C1917' }
+            };
+
+            const p = palettes[perfume.bottleColor] || palettes.amber;
+            const uid = `grad_${perfume.id}_${Math.random().toString(36).substr(2, 5)}`;
+            const shortBrand = perfume.brand.length > 14 ? perfume.brand.substring(0, 13) + '…' : perfume.brand;
+            const shortName = perfume.name.length > 14 ? perfume.name.substring(0, 13) + '…' : perfume.name;
+
+            return `
+                <svg class="${sizeClass} drop-shadow-md select-none" viewBox="0 0 140 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="${uid}" x1="25" y1="45" x2="115" y2="165" gradientUnits="userSpaceOnUse">
+                            <stop offset="0%" stop-color="${p.glass1}" stop-opacity="0.92"/>
+                            <stop offset="100%" stop-color="${p.glass2}" stop-opacity="0.98"/>
+                        </linearGradient>
+                        <linearGradient id="cap_${uid}" x1="50" y1="12" x2="90" y2="40" gradientUnits="userSpaceOnUse">
+                            <stop offset="0%" stop-color="${p.cap}"/>
+                            <stop offset="50%" stop-color="#FDE68A" stop-opacity="0.6"/>
+                            <stop offset="100%" stop-color="${p.cap}"/>
+                        </linearGradient>
+                    </defs>
+                    <ellipse cx="70" cy="170" rx="42" ry="5" fill="#1C1917" fill-opacity="0.12"/>
+                    <rect x="53" y="14" width="34" height="24" rx="4" fill="url(#cap_${uid})" stroke="#B48A4E" stroke-width="0.8"/>
+                    <rect x="59" y="38" width="22" height="10" rx="1.5" fill="#D4B07A"/>
+                    <rect x="28" y="48" width="84" height="116" rx="14" fill="url(#${uid})" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"/>
+                    <rect x="33" y="53" width="74" height="106" rx="10" stroke="rgba(255,255,255,0.22)" stroke-width="1"/>
+                    <path d="M36 58C36 55.7909 37.7909 54 40 54H46V154H40C37.7909 154 36 152.209 36 150V58Z" fill="white" fill-opacity="0.16"/>
+                    <rect x="41" y="76" width="58" height="62" rx="4" fill="${p.labelBg}" stroke="#B48A4E" stroke-width="1"/>
+                    <rect x="44" y="79" width="52" height="56" rx="2" stroke="#B48A4E" stroke-opacity="0.4" stroke-width="0.6"/>
+                    <text x="70" y="95" text-anchor="middle" fill="#B48A4E" font-family="Inter, sans-serif" font-size="6.2" font-weight="700" letter-spacing="0.8">
+                        ${shortBrand.toUpperCase()}
+                    </text>
+                    <line x1="54" y1="100" x2="86" y2="100" stroke="#B48A4E" stroke-opacity="0.5" stroke-width="0.6"/>
+                    <text x="70" y="113" text-anchor="middle" fill="${p.labelText}" font-family="Playfair Display, Georgia, serif" font-size="8.5" font-weight="700">
+                        ${shortName}
+                    </text>
+                    <text x="70" y="126" text-anchor="middle" fill="#78716C" font-family="Inter, sans-serif" font-size="5.5" letter-spacing="0.5">
+                        ${perfume.concentration === 'Extrait de Parfum' ? 'EXTRAIT' : perfume.concentration === 'Eau de Toilette' ? 'EDT' : 'EDP'}
+                    </text>
+                </svg>
+            `;
+        }
+
+        // Select Volume Directly on a Catalog Card
+        function selectCardVolume(perfumeId, vol, event) {
+            if (event) event.stopPropagation();
+            state.cardSelectedVolumes[perfumeId] = vol;
+            renderAllViews();
+        }
+
+        // Render Both Views (Grid & Pricelist Table)
+        function renderAllViews() {
+            const filtered = getFilteredPerfumes();
+            const countLabel = document.getElementById('results-count');
+            const emptyState = document.getElementById('empty-state');
+            const grid = document.getElementById('catalog-grid');
+            const tableWrapper = document.getElementById('pricelist-table-wrapper');
+
+            countLabel.textContent = `${filtered.length} ta atir`;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                grid.classList.add('hidden');
+                tableWrapper.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                lucide.createIcons();
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+
+            if (state.viewMode === 'cards') {
+                grid.classList.remove('hidden');
+                tableWrapper.classList.add('hidden');
+                renderCatalogCards(filtered);
+            } else {
+                grid.classList.add('hidden');
+                tableWrapper.classList.remove('hidden');
+                renderPricelistTable(filtered);
+            }
+
+            lucide.createIcons();
+        }
+
+        // Render Cards View
+        function renderCatalogCards(filtered) {
+            const grid = document.getElementById('catalog-grid');
+            const volumes = [5, 10, 50, 100];
+
+            grid.innerHTML = filtered.map(perfume => {
+                const selectedVol = state.cardSelectedVolumes[perfume.id] || 10; // Default to 10ml popular raspiv or user choice
+                const priceInfo = getCalculatedPrice(perfume, selectedVol);
+                const keyNotes = [...perfume.topNotes.slice(0, 1), ...perfume.heartNotes.slice(0, 1), ...perfume.baseNotes.slice(0, 1)];
+                
+                return `
+                    <article class="perfume-card group bg-white rounded-3xl border border-stone-200/80 hover:border-gold/60 shadow-luxury hover:shadow-luxury-hover transition-all duration-300 flex flex-col overflow-hidden relative">
+                        
+                        <!-- Top Badges & Edit/Delete Controls -->
+                        <div class="px-4 pt-4 flex items-center justify-between gap-1.5 z-10">
+                            <div class="flex items-center gap-1.5">
+                                <span class="px-2.5 py-1 rounded-lg bg-cream text-stone-700 text-[11px] font-medium">
+                                    ${perfume.category}
+                                </span>
+                                ${perfume.discount > 0 ? `
+                                    <span class="px-2 py-1 rounded-lg bg-rose-600 text-white text-[11px] font-bold shadow-xs">
+                                        -${perfume.discount}%
+                                    </span>
+                                ` : ''}
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <button onclick="openEditModal('${perfume.id}', event)" class="p-1.5 rounded-lg bg-cream hover:bg-gold-soft text-stone-500 hover:text-gold-dark transition-colors" title="Narxlarni tahrirlash">
+                                    <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+                                </button>
+                                ${perfume.isCustom ? `
+                                    <button onclick="deletePerfume('${perfume.id}', event)" class="p-1.5 rounded-lg bg-red-50 text-red-500 hover:bg-red-100 transition-colors" title="O'chirish">
+                                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+
+                        <!-- Bottle Illustration Stage -->
+                        <div onclick="openDetailModal('${perfume.id}')" class="cursor-pointer py-4 px-4 flex flex-col items-center justify-center bg-gradient-to-b from-transparent via-cream/40 to-cream/70 relative">
+                            <div class="bottle-float">
+                                ${generateBottleSVG(perfume, 'w-28 h-36')}
+                            </div>
+                        </div>
+
+                        <!-- Card Info Body -->
+                        <div class="p-5 pt-3.5 flex-1 flex flex-col justify-between">
+                            <div>
+                                <div onclick="openDetailModal('${perfume.id}')" class="cursor-pointer">
+                                    <p class="text-[11px] uppercase tracking-[0.15em] text-gold-dark font-semibold">
+                                        ${perfume.brand}
+                                    </p>
+                                    <h3 class="font-serif text-lg font-bold text-charcoal group-hover:text-gold-dark transition-colors mt-0.5 line-clamp-1">
+                                        ${perfume.name}
+                                    </h3>
+                                    
+                                    <!-- Key Scent Notes Pills -->
+                                    <div class="flex flex-wrap gap-1 mt-2">
+                                        ${keyNotes.map(note => `
+                                            <span class="px-2 py-0.5 rounded-md bg-ivory border border-stone-200/80 text-stone-600 text-[10px]">
+                                                ${note}
+                                            </span>
+                                        `).join('')}
+                                    </div>
+                                </div>
+
+                                <!-- Interactive Volume Selector Pills (5ml, 10ml, 50ml, 100ml) -->
+                                <div class="mt-4">
+                                    <div class="flex items-center justify-between text-[10px] text-stone-400 font-medium mb-1.5">
+                                        <span>Hajmni tanlang:</span>
+                                        <span>${selectedVol <= 10 ? 'Raspiv (Otlivant)' : 'Butun flakon'}</span>
+                                    </div>
+                                    <div class="grid grid-cols-4 gap-1.5">
+                                        ${volumes.map(vol => {
+                                            const isSelected = selectedVol === vol;
+                                            return `
+                                                <button 
+                                                    onclick="selectCardVolume('${perfume.id}', ${vol}, event)"
+                                                    class="py-1.5 rounded-lg text-xs font-semibold border transition-all ${isSelected ? 'bg-charcoal text-white border-charcoal shadow-xs' : 'bg-ivory text-stone-600 border-stone-200 hover:border-gold'}"
+                                                >
+                                                    ${vol}ml
+                                                </button>
+                                            `;
+                                        }).join('')}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Dynamic Price & Add Button -->
+                            <div class="mt-4 pt-3.5 border-t border-stone-100 flex items-center justify-between gap-2">
+                                <div>
+                                    ${priceInfo.discount > 0 ? `
+                                        <span class="block text-[11px] text-stone-400 line-through">
+                                            ${formatPrice(priceInfo.original)}
+                                        </span>
+                                    ` : `
+                                        <span class="block text-[10px] text-stone-400 uppercase tracking-wider">${selectedVol} ml narxi</span>
+                                    `}
+                                    <span class="font-serif text-base sm:text-lg font-bold ${priceInfo.discount > 0 ? 'text-rose-700' : 'text-charcoal'}">
+                                        ${formatPrice(priceInfo.final)}
+                                    </span>
+                                </div>
+
+                                <button 
+                                    onclick="quickAddToSelection('${perfume.id}', ${selectedVol})" 
+                                    class="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-gold hover:bg-gold-dark text-white text-xs font-semibold transition-colors shadow-sm"
+                                >
+                                    <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                                    <span>Qo'shish</span>
+                                </button>
+                            </div>
+                        </div>
+
+                    </article>
+                `;
+            }).join('');
+        }
+
+        // Render Luxury Pricelist Table View
+        function renderPricelistTable(filtered) {
+            const tbody = document.getElementById('pricelist-tbody');
+            const volumes = [5, 10, 50, 100];
+
+            tbody.innerHTML = filtered.map(perfume => {
+                return `
+                    <tr class="hover:bg-cream/50 transition-colors group">
+                        <td class="py-3.5 px-4">
+                            <div class="flex items-center gap-3 cursor-pointer" onclick="openDetailModal('${perfume.id}')">
+                                <div class="w-9 h-11 rounded-lg bg-cream flex items-center justify-center shrink-0">
+                                    ${generateBottleSVG(perfume, 'w-7 h-9')}
+                                </div>
+                                <div>
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="text-[11px] font-bold uppercase tracking-wider text-gold-dark">${perfume.brand}</span>
+                                        ${perfume.discount > 0 ? `<span class="px-1.5 py-0.2 rounded bg-rose-600 text-white text-[10px] font-bold">-${perfume.discount}%</span>` : ''}
+                                    </div>
+                                    <p class="font-serif font-bold text-charcoal group-hover:text-gold-dark transition-colors">${perfume.name}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="py-3.5 px-3 whitespace-nowrap">
+                            <span class="px-2.5 py-1 rounded-lg bg-ivory border border-stone-200 text-xs font-medium text-stone-600">${perfume.category}</span>
+                        </td>
+                        ${volumes.map(vol => {
+                            const p = getCalculatedPrice(perfume, vol);
+                            return `
+                                <td class="py-3.5 px-3 text-right whitespace-nowrap">
+                                    <button 
+                                        onclick="quickAddToSelection('${perfume.id}', ${vol})"
+                                        class="inline-flex flex-col items-end px-2.5 py-1.5 rounded-xl hover:bg-gold-soft border border-transparent hover:border-gold/40 transition-all group/price"
+                                        title="${perfume.name} (${vol} ml) ni tanlash"
+                                    >
+                                        ${p.discount > 0 ? `<span class="text-[10px] text-stone-400 line-through">${formatPrice(p.original)}</span>` : ''}
+                                        <span class="font-semibold text-xs sm:text-sm ${p.discount > 0 ? 'text-rose-700' : 'text-charcoal'} group-hover/price:text-gold-dark">
+                                            ${formatPrice(p.final)}
+                                        </span>
+                                    </button>
+                                </td>
+                            `;
+                        }).join('')}
+                        <td class="py-3.5 px-4 text-center whitespace-nowrap">
+                            <div class="inline-flex items-center gap-1.5">
+                                <button onclick="openEditModal('${perfume.id}', event)" class="p-2 rounded-xl bg-cream hover:bg-gold hover:text-white text-stone-600 transition-colors" title="Narxlarni tahrirlash">
+                                    <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+                                </button>
+                                <button onclick="openDetailModal('${perfume.id}')" class="p-2 rounded-xl bg-cream hover:bg-charcoal hover:text-white text-stone-600 transition-colors" title="Notalar piramidasi">
+                                    <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Open Product Detail Modal
+        function openDetailModal(perfumeId) {
+            const perfume = state.perfumes.find(p => p.id === perfumeId);
+            if (!perfume) return;
+
+            state.activeModalPerfumeId = perfumeId;
+            if (![5, 10, 50, 100].includes(state.activeModalVolume)) {
+                state.activeModalVolume = state.cardSelectedVolumes[perfumeId] || 10;
+            }
+
+            const priceInfo = getCalculatedPrice(perfume, state.activeModalVolume);
+            const modal = document.getElementById('detail-modal');
+            const content = document.getElementById('detail-modal-content');
+            const volumes = [5, 10, 50, 100];
+
+            content.innerHTML = `
+                <!-- Left Column: Bottle Showcase & Performance -->
+                <div class="md:col-span-5 bg-gradient-to-b from-cream to-ivory p-6 sm:p-8 flex flex-col items-center justify-between border-b md:border-b-0 md:border-r border-stone-200/80">
+                    <div class="w-full flex items-center justify-between">
+                        <span class="px-3 py-1 rounded-full bg-white border border-stone-200 text-xs font-medium text-charcoal">
+                            ${perfume.category}
+                        </span>
+                        <div class="flex items-center gap-1.5">
+                            ${perfume.discount > 0 ? `<span class="px-2.5 py-1 rounded-full bg-rose-600 text-white text-xs font-bold">-${perfume.discount}%</span>` : ''}
+                            <span class="px-3 py-1 rounded-full bg-gold-soft text-gold-dark text-xs font-medium">
+                                ${perfume.scent}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="my-6 transform hover:scale-105 transition-transform duration-500">
+                        ${generateBottleSVG(perfume, 'w-40 h-52')}
+                    </div>
+
+                    <!-- Longevity & Sillage Bars -->
+                    <div class="w-full space-y-3 bg-white p-4 rounded-2xl border border-stone-200/70">
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-stone-500 font-medium">Turuvchanlik (Stoykost)</span>
+                                <span class="font-semibold text-charcoal">${perfume.longevity || 88}%</span>
+                            </div>
+                            <div class="w-full h-1.5 bg-stone-100 rounded-full overflow-hidden">
+                                <div class="h-full bg-gold rounded-full" style="width: ${perfume.longevity || 88}%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-stone-500 font-medium">Shleyf (Ifor taralishi)</span>
+                                <span class="font-semibold text-charcoal">${perfume.sillage || 85}%</span>
+                            </div>
+                            <div class="w-full h-1.5 bg-stone-100 rounded-full overflow-hidden">
+                                <div class="h-full bg-charcoal rounded-full" style="width: ${perfume.sillage || 85}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Details, Fragrance Pyramid & All Volume Prices -->
+                <div class="md:col-span-7 p-6 sm:p-8 flex flex-col justify-between space-y-5">
+                    <div>
+                        <div class="flex items-center justify-between pr-8">
+                            <p class="text-xs uppercase tracking-[0.2em] text-gold-dark font-bold">${perfume.brand}</p>
+                            <button onclick="closeDetailModal(); openEditModal('${perfume.id}')" class="text-xs text-stone-500 hover:text-gold-dark underline font-medium">
+                                Narxlarni tahrirlash
+                            </button>
+                        </div>
+                        <h2 class="font-serif text-2xl sm:text-3xl font-bold text-charcoal mt-1">${perfume.name}</h2>
+                        <p class="text-xs text-stone-400 mt-0.5">${perfume.concentration}</p>
+
+                        <p class="text-sm text-stone-600 leading-relaxed mt-3">
+                            ${perfume.description}
+                        </p>
+
+                        <!-- Fragrance Pyramid -->
+                        <div class="mt-4 space-y-2">
+                            <h4 class="text-xs font-bold uppercase tracking-wider text-charcoal flex items-center gap-1.5">
+                                <i data-lucide="layers" class="w-3.5 h-3.5 text-gold"></i>
+                                Notalar piramidasi
+                            </h4>
+                            
+                            <div class="grid grid-cols-1 gap-2">
+                                <div class="p-2.5 rounded-xl bg-white border border-stone-200/70">
+                                    <span class="block text-[10px] font-semibold text-gold-dark uppercase">Yuqori notalar</span>
+                                    <p class="text-xs text-charcoal mt-0.5">${perfume.topNotes.join(' • ')}</p>
+                                </div>
+                                <div class="p-2.5 rounded-xl bg-white border border-stone-200/70">
+                                    <span class="block text-[10px] font-semibold text-gold-dark uppercase">O'rta notalar</span>
+                                    <p class="text-xs text-charcoal mt-0.5">${perfume.heartNotes.join(' • ')}</p>
+                                </div>
+                                <div class="p-2.5 rounded-xl bg-white border border-stone-200/70">
+                                    <span class="block text-[10px] font-semibold text-gold-dark uppercase">Asosiy notalar</span>
+                                    <p class="text-xs text-charcoal mt-0.5">${perfume.baseNotes.join(' • ')}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4-Volume Selector & Add Action -->
+                    <div class="pt-4 border-t border-stone-200 space-y-4">
+                        <div>
+                            <span class="block text-xs text-stone-500 mb-2 font-medium">Hajmni tanlang (Raspiv yoki Butun flakon):</span>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                ${volumes.map(vol => {
+                                    const p = getCalculatedPrice(perfume, vol);
+                                    const active = state.activeModalVolume === vol;
+                                    return `
+                                        <button 
+                                            onclick="selectModalVolume(${vol})" 
+                                            class="p-2.5 rounded-xl text-left border transition-all ${active ? 'bg-charcoal text-white border-charcoal shadow-sm' : 'bg-white text-charcoal border-stone-200 hover:border-gold'}"
+                                        >
+                                            <span class="block text-xs font-bold">${vol} ml</span>
+                                            <span class="block text-[11px] mt-0.5 ${active ? 'text-gold-light' : 'text-stone-500'}">${formatCompactPrice(p.final)}</span>
+                                        </button>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between gap-4 bg-cream/70 p-3.5 rounded-2xl border border-stone-200/70">
+                            <div>
+                                <span class="block text-[11px] text-stone-500">Tanlangan hajm (${state.activeModalVolume} ml):</span>
+                                <div class="flex items-baseline gap-2">
+                                    <span class="font-serif text-xl sm:text-2xl font-bold ${priceInfo.discount > 0 ? 'text-rose-700' : 'text-charcoal'}">${formatPrice(priceInfo.final)}</span>
+                                    ${priceInfo.discount > 0 ? `<span class="text-xs text-stone-400 line-through">${formatPrice(priceInfo.original)}</span>` : ''}
+                                </div>
+                            </div>
+
+                            <button 
+                                onclick="addFromModalToSelection()" 
+                                class="py-3 px-5 rounded-xl bg-gold hover:bg-gold-dark text-white font-semibold text-xs sm:text-sm flex items-center gap-2 shadow-md transition-all shrink-0"
+                            >
+                                <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                                <span>Qo'shish</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            lucide.createIcons();
+        }
+
+        function selectModalVolume(vol) {
+            state.activeModalVolume = vol;
+            if (state.activeModalPerfumeId) {
+                openDetailModal(state.activeModalPerfumeId);
+            }
+        }
+
+        function closeDetailModal() {
+            const modal = document.getElementById('detail-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            state.activeModalPerfumeId = null;
+        }
+
+        function addFromModalToSelection() {
+            if (!state.activeModalPerfumeId) return;
+            quickAddToSelection(state.activeModalPerfumeId, state.activeModalVolume);
+            closeDetailModal();
+        }
+
+        // Selection / Order List Management
+        function quickAddToSelection(perfumeId, volume = 10) {
+            const perfume = state.perfumes.find(p => p.id === perfumeId);
+            if (!perfume) return;
+
+            const existingIndex = state.selection.findIndex(item => item.id === perfumeId && item.volume === volume);
+            if (existingIndex > -1) {
+                state.selection[existingIndex].qty += 1;
+            } else {
+                state.selection.push({
+                    id: perfumeId,
+                    volume: volume,
+                    qty: 1
+                });
+            }
+
+            saveSelectionToStorage();
+            renderSelectionDrawer();
+            showToast(`"${perfume.name}" (${volume} ml) buyurtmaga qo'shildi`);
+        }
+
+        function updateSelectionQty(index, delta) {
+            if (!state.selection[index]) return;
+            state.selection[index].qty += delta;
+            if (state.selection[index].qty <= 0) {
+                state.selection.splice(index, 1);
+            }
+            saveSelectionToStorage();
+            renderSelectionDrawer();
+        }
+
+        function clearSelection() {
+            state.selection = [];
+            saveSelectionToStorage();
+            renderSelectionDrawer();
+            showToast("Buyurtma ro'yxati tozalandi");
+        }
+
+        function renderSelectionDrawer() {
+            const container = document.getElementById('selection-items-container');
+            const badge = document.getElementById('cart-badge');
+            const totalEl = document.getElementById('selection-total-price');
+            const savingsRow = document.getElementById('selection-savings-row');
+            const savingsEl = document.getElementById('selection-savings-amount');
+            const footer = document.getElementById('selection-footer');
+
+            const totalItemsCount = state.selection.reduce((sum, item) => sum + item.qty, 0);
+            badge.textContent = totalItemsCount;
+
+            if (state.selection.length === 0) {
+                footer.classList.add('hidden');
+                container.innerHTML = `
+                    <div class="h-full flex flex-col items-center justify-center text-center py-12">
+                        <div class="w-16 h-16 rounded-2xl bg-cream text-stone-400 flex items-center justify-center mb-4">
+                            <i data-lucide="shopping-bag" class="w-8 h-8"></i>
+                        </div>
+                        <h4 class="font-serif text-lg font-semibold text-charcoal">Buyurtma ro'yxati bo'sh</h4>
+                        <p class="text-xs text-stone-500 mt-1 max-w-xs">
+                            Katalog yoki narxlar jadvalidan kerakli hajmni (5ml, 10ml, 50ml, 100ml) tanlang.
+                        </p>
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+
+            footer.classList.remove('hidden');
+            let grandTotalUzs = 0;
+            let totalSavingsUzs = 0;
+
+            container.innerHTML = state.selection.map((sel, index) => {
+                const perfume = state.perfumes.find(p => p.id === sel.id);
+                if (!perfume) return '';
+
+                const pInfo = getCalculatedPrice(perfume, sel.volume);
+                const lineTotal = pInfo.final * sel.qty;
+                const lineSavings = (pInfo.original - pInfo.final) * sel.qty;
+                
+                grandTotalUzs += lineTotal;
+                totalSavingsUzs += lineSavings;
+
+                return `
+                    <div class="p-3.5 bg-white rounded-2xl border border-stone-200/80 flex items-center gap-3 shadow-xs">
+                        <div class="w-14 h-16 bg-cream rounded-xl flex items-center justify-center shrink-0">
+                            ${generateBottleSVG(perfume, 'w-11 h-14')}
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-[10px] uppercase tracking-wider text-gold-dark font-bold truncate">${perfume.brand}</p>
+                            <h4 class="font-serif text-sm font-bold text-charcoal truncate">${perfume.name}</h4>
+                            <p class="text-xs text-stone-500 mt-0.5">
+                                <span class="font-semibold text-charcoal">${sel.volume} ml</span> (${sel.volume <= 10 ? 'raspiv' : 'flakon'}) • ${formatPrice(pInfo.final)}
+                            </p>
+                            
+                            <div class="flex items-center justify-between mt-2">
+                                <div class="inline-flex items-center bg-ivory rounded-lg border border-stone-200">
+                                    <button onclick="updateSelectionQty(${index}, -1)" class="w-7 h-7 flex items-center justify-center text-stone-600 hover:text-charcoal font-bold">-</button>
+                                    <span class="px-2.5 text-xs font-semibold text-charcoal">${sel.qty}</span>
+                                    <button onclick="updateSelectionQty(${index}, 1)" class="w-7 h-7 flex items-center justify-center text-stone-600 hover:text-charcoal font-bold">+</button>
+                                </div>
+                                <span class="text-xs font-bold text-charcoal">${formatPrice(lineTotal)}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            if (totalSavingsUzs > 0) {
+                savingsRow.classList.remove('hidden');
+                savingsEl.textContent = `-${formatPrice(totalSavingsUzs)}`;
+            } else {
+                savingsRow.classList.add('hidden');
+            }
+
+            totalEl.textContent = formatPrice(grandTotalUzs);
+            lucide.createIcons();
+        }
+
+        function toggleDrawer(open) {
+            const drawer = document.getElementById('selection-drawer');
+            const backdrop = document.getElementById('selection-drawer-backdrop');
+
+            if (open) {
+                backdrop.classList.remove('hidden');
+                setTimeout(() => drawer.classList.remove('translate-x-full'), 10);
+            } else {
+                drawer.classList.add('translate-x-full');
+                setTimeout(() => backdrop.classList.add('hidden'), 280);
+            }
+        }
+
+        // Copy Order Summary (Receipt Format)
+        function copyOrderSummary() {
+            if (state.selection.length === 0) return;
+
+            let totalUzs = 0;
+            let totalSavingsUzs = 0;
+            let lines = [
+                "✨ *PARFUM BOUTIQUE — BUYURTMA CHEKI*",
+                "────────────────────"
+            ];
+
+            state.selection.forEach((sel, idx) => {
+                const p = state.perfumes.find(item => item.id === sel.id);
+                if (!p) return;
+                const pInfo = getCalculatedPrice(p, sel.volume);
+                const subtotal = pInfo.final * sel.qty;
+                totalUzs += subtotal;
+                totalSavingsUzs += (pInfo.original - pInfo.final) * sel.qty;
+
+                const typeLabel = sel.volume <= 10 ? "Raspiv" : "Flakon";
+                lines.push(`${idx + 1}. *${p.brand} — ${p.name}*`);
+                lines.push(`   • Hajmi: ${sel.volume} ml (${typeLabel}) × ${sel.qty} ta`);
+                lines.push(`   • Narxi: ${formatPrice(subtotal)}${pInfo.discount > 0 ? ` (-${pInfo.discount}% aksiya)` : ''}`);
+            });
+
+            lines.push("────────────────────");
+            if (totalSavingsUzs > 0) {
+                lines.push(`🎁 *Chegirma tejovi:* -${formatPrice(totalSavingsUzs)}`);
+            }
+            lines.push(`💰 *JAMI TO'LOV:* ${formatPrice(totalUzs)}`);
+
+            copyTextToClipboard(lines.join('\n'), "Buyurtma cheki nusxalandi! Telegram yoki WhatsApp'ga yuborishingiz mumkin.");
+        }
+
+        // Copy Full Pricelist Text for Clients
+        function copyFullPricelist() {
+            const filtered = getFilteredPerfumes();
+            if (filtered.length === 0) return;
+
+            let lines = [
+                "💎 *PARFUM BOUTIQUE — RASMIY NARXLAR RO'YXATI*",
+                `💱 Valyuta: ${state.currency === 'UZS' ? "O'zbek so'mi (UZS)" : `AQSH dollari (1$ = ${state.usdRate.toLocaleString('ru-RU')} so'm)`}`,
+                "════════════════════"
+            ];
+
+            filtered.forEach((p, idx) => {
+                const p5 = getCalculatedPrice(p, 5).final;
+                const p10 = getCalculatedPrice(p, 10).final;
+                const p50 = getCalculatedPrice(p, 50).final;
+                const p100 = getCalculatedPrice(p, 100).final;
+
+                lines.push(`${idx + 1}. *${p.brand} — ${p.name}* (${p.category})${p.discount > 0 ? ` 🔥 -${p.discount}%` : ''}`);
+                lines.push(`   💧 5ml: ${formatPrice(p5)} | 10ml: ${formatPrice(p10)}`);
+                lines.push(`   🧴 50ml: ${formatPrice(p50)} | 100ml: ${formatPrice(p100)}`);
+            });
+
+            lines.push("════════════════════");
+            lines.push("📩 Buyurtma berish uchun kerakli atir va hajmni yozib yuboring!");
+
+            copyTextToClipboard(lines.join('\n'), `Prayst-list (${filtered.length} ta atir narxlari) nusxalandi!`);
+        }
+
+        function copyTextToClipboard(text, successMsg) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-9999px';
+            document.body.appendChild(textArea);
+            textArea.select();
+
+            try {
+                document.execCommand('copy');
+                showToast(successMsg);
+            } catch (err) {
+                showToast("Nusxalashda xatolik yuz berdi.");
+            }
+            document.body.removeChild(textArea);
+        }
+
+        // Add / Edit Perfume Modal Handlers
+        function openAddModal() {
+            document.getElementById('edit-perfume-id').value = '';
+            document.getElementById('form-modal-title').textContent = "Yangi atir va narxlar qo'shish";
+            document.getElementById('form-modal-subtitle').textContent = "Raspiv (5ml/10ml) va flakon (50ml/100ml) narxlarini kiriting";
+            document.getElementById('add-perfume-form').reset();
+            document.getElementById('new-discount').value = 0;
+
+            const modal = document.getElementById('add-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function openEditModal(perfumeId, event) {
+            if (event) event.stopPropagation();
+            const p = state.perfumes.find(item => item.id === perfumeId);
+            if (!p) return;
+
+            document.getElementById('edit-perfume-id').value = p.id;
+            document.getElementById('form-modal-title').textContent = "Atir va narxlarni tahrirlash";
+            document.getElementById('form-modal-subtitle').textContent = `${p.brand} — ${p.name}`;
+
+            document.getElementById('new-brand').value = p.brand;
+            document.getElementById('new-name').value = p.name;
+            document.getElementById('new-category').value = p.category;
+            document.getElementById('new-scent').value = p.scent;
+            document.getElementById('new-conc').value = p.concentration;
+            document.getElementById('new-discount').value = p.discount || 0;
+
+            document.getElementById('new-price5').value = p.prices[5];
+            document.getElementById('new-price10').value = p.prices[10];
+            document.getElementById('new-price50').value = p.prices[50];
+            document.getElementById('new-price100').value = p.prices[100];
+
+            const radio = document.querySelector(`input[name="bottleColor"][value="${p.bottleColor}"]`);
+            if (radio) radio.checked = true;
+
+            document.getElementById('new-top').value = p.topNotes.join(', ');
+            document.getElementById('new-heart').value = p.heartNotes.join(', ');
+            document.getElementById('new-base').value = p.baseNotes.join(', ');
+            document.getElementById('new-desc').value = p.description;
+
+            const modal = document.getElementById('add-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeAddModal() {
+            const modal = document.getElementById('add-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function handleSavePerfume(event) {
+            event.preventDefault();
+
+            const editId = document.getElementById('edit-perfume-id').value;
+            const brand = document.getElementById('new-brand').value.trim();
+            const name = document.getElementById('new-name').value.trim();
+            const category = document.getElementById('new-category').value;
+            const scent = document.getElementById('new-scent').value;
+            const concentration = document.getElementById('new-conc').value;
+            const discount = parseInt(document.getElementById('new-discount').value, 10) || 0;
+
+            const prices = {
+                5: parseInt(document.getElementById('new-price5').value, 10),
+                10: parseInt(document.getElementById('new-price10').value, 10),
+                50: parseInt(document.getElementById('new-price50').value, 10),
+                100: parseInt(document.getElementById('new-price100').value, 10)
+            };
+
+            const bottleColor = document.querySelector('input[name="bottleColor"]:checked').value;
+            const topNotes = document.getElementById('new-top').value.split(',').map(s => s.trim()).filter(Boolean);
+            const heartNotes = document.getElementById('new-heart').value.split(',').map(s => s.trim()).filter(Boolean);
+            const baseNotes = document.getElementById('new-base').value.split(',').map(s => s.trim()).filter(Boolean);
+            const description = document.getElementById('new-desc').value.trim();
+
+            if (editId) {
+                const idx = state.perfumes.findIndex(item => item.id === editId);
+                if (idx > -1) {
+                    state.perfumes[idx] = {
+                        ...state.perfumes[idx],
+                        brand,
+                        name,
+                        category,
+                        scent,
+                        concentration,
+                        discount,
+                        prices,
+                        bottleColor,
+                        topNotes: topNotes.length ? topNotes : ['Bergamot'],
+                        heartNotes: heartNotes.length ? heartNotes : ['Yasmin'],
+                        baseNotes: baseNotes.length ? baseNotes : ['Mushk'],
+                        description
+                    };
+                    showToast(`"${brand} — ${name}" narxlari yangilandi!`);
+                }
+            } else {
+                const newPerfume = {
+                    id: 'custom_' + Date.now(),
+                    brand,
+                    name,
+                    category,
+                    scent,
+                    concentration,
+                    discount,
+                    prices,
+                    popularity: 99,
+                    longevity: 90,
+                    sillage: 88,
+                    bottleColor,
+                    topNotes: topNotes.length ? topNotes : ['Bergamot'],
+                    heartNotes: heartNotes.length ? heartNotes : ['Yasmin'],
+                    baseNotes: baseNotes.length ? baseNotes : ['Mushk'],
+                    description,
+                    isCustom: true
+                };
+                state.perfumes.unshift(newPerfume);
+                showToast(`"${brand} — ${name}" katalogga qo'shildi!`);
+            }
+
+            savePerfumesToStorage();
+            renderAllViews();
+            renderSelectionDrawer();
+            closeAddModal();
+        }
+
+        function deletePerfume(perfumeId, event) {
+            event.stopPropagation();
+            state.perfumes = state.perfumes.filter(p => p.id !== perfumeId);
+            state.selection = state.selection.filter(s => s.id !== perfumeId);
+            savePerfumesToStorage();
+            saveSelectionToStorage();
+            renderAllViews();
+            renderSelectionDrawer();
+            showToast("Atir katalogdan o'chirildi");
+        }
+
+        // Bulk Price & USD Rate Management
+        function openBulkPriceModal() {
+            document.getElementById('usd-rate-input').value = state.usdRate;
+            document.getElementById('custom-percent-input').value = '';
+            const modal = document.getElementById('bulk-price-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeBulkPriceModal() {
+            const modal = document.getElementById('bulk-price-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function updateRateDisplay() {
+            const indicator = document.getElementById('rate-indicator');
+            if (indicator) {
+                indicator.textContent = `1$ = ${state.usdRate.toLocaleString('ru-RU')} so'm`;
+            }
+        }
+
+        function updateUsdRate() {
+            const newRate = parseInt(document.getElementById('usd-rate-input').value, 10);
+            if (!newRate || newRate < 1000) return;
+
+            state.usdRate = newRate;
+            localStorage.setItem(STORAGE_KEY_RATE, String(newRate));
+            updateRateDisplay();
+            renderAllViews();
+            renderSelectionDrawer();
+            closeBulkPriceModal();
+            showToast(`Dollar kursi yangilandi: 1$ = ${newRate.toLocaleString('ru-RU')} so'm`);
+        }
+
+        function applyBulkPercent(percent) {
+            if (!percent || percent === 0) return;
+            const multiplier = (100 + percent) / 100;
+
+            state.perfumes.forEach(p => {
+                [5, 10, 50, 100].forEach(vol => {
+                    if (p.prices && p.prices[vol]) {
+                        p.prices[vol] = Math.round((p.prices[vol] * multiplier) / 1000) * 1000;
+                    }
+                });
+            });
+
+            savePerfumesToStorage();
+            renderAllViews();
+            renderSelectionDrawer();
+            closeBulkPriceModal();
+            showToast(`Barcha narxlar ${percent > 0 ? '+' : ''}${percent}% ga o'zgartirildi!`);
+        }
+
+        function applyCustomPercent() {
+            const val = parseFloat(document.getElementById('custom-percent-input').value);
+            if (isNaN(val) || val === 0) return;
+            applyBulkPercent(val);
+        }
+
+        // Reset Catalog Confirmation Modal
+        function openResetConfirmModal() {
+            const modal = document.getElementById('reset-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeResetConfirmModal() {
+            const modal = document.getElementById('reset-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function confirmResetCatalog() {
+            state.perfumes = JSON.parse(JSON.stringify(DEFAULT_PERFUMES));
+            state.usdRate = 12800;
+            localStorage.setItem(STORAGE_KEY_RATE, '12800');
+            savePerfumesToStorage();
+            updateRateDisplay();
+            resetFilters();
+            renderSelectionDrawer();
+            closeResetConfirmModal();
+            showToast("Katalog va narxlar boshlang'ich holatga qaytarildi");
+        }
+
+        // Custom Toast Message Box
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'pointer-events-auto flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-charcoal text-white text-xs sm:text-sm font-medium shadow-xl border border-gold/30 transform transition-all duration-300 translate-y-2 opacity-0';
+            toast.innerHTML = `
+                <i data-lucide="check-circle-2" class="w-4 h-4 text-gold shrink-0"></i>
+                <span>${message}</span>
+            `;
+            container.appendChild(toast);
+            lucide.createIcons();
+
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            });
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
